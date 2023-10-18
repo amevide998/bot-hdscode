@@ -1,25 +1,34 @@
 package main
 
 import (
-	"fmt"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
-	"net/http"
 	"os"
 )
 
 func main() {
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		port = "8080"
+	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN_BOT"))
+	if err != nil {
+		log.Panic(err)
 	}
 
-	http.HandleFunc("/", HelloHandler)
+	bot.Debug = true
 
-	log.Println("Listening on port", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
-}
+	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-func HelloHandler(w http.ResponseWriter, _ *http.Request) {
-	fmt.Fprintf(w, "Hello from Koyeb\n")
+	u := tgbotapi.NewUpdate(0)
+	u.Timeout = 60
+
+	updates := bot.GetUpdatesChan(u)
+
+	for update := range updates {
+		if update.Message != nil { // If we got a message
+			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+			msg.ReplyToMessageID = update.Message.MessageID
+
+			bot.Send(msg)
+		}
+	}
 }
