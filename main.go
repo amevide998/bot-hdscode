@@ -14,8 +14,6 @@ func main() {
 
 	bot.Debug = true
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
-
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
@@ -23,7 +21,6 @@ func main() {
 
 	for update := range updates {
 		if update.Message != nil { // If we got a message
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
 			msg.ReplyToMessageID = update.Message.MessageID
