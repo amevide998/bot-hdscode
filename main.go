@@ -12,10 +12,10 @@ func main() {
 		log.Panic(err)
 	}
 
-	bot.Debug = true
+	bot.Debug = false
 
 	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
+	//u.Timeout = 60
 
 	updates := bot.GetUpdatesChan(u)
 
